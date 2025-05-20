@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Review Detail Page Styling */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 800px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.card-title {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.card-subtitle {
+    color: #7f8c8d;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-text {
+    color: #34495e;
+    line-height: 1.8;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-link {
+    display: inline-block;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+.card-link:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #7f8c8d;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    margin-right: 1rem;
+}
+
+.btn-secondary:hover {
+    background-color: #6c757d;
+}
+
+.btn-danger {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #e74c3c;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card {
+        margin: 1rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+    }
+
+    .btn-secondary,
+    .btn-danger {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}
+</style>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ review.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+            Rating: {{ review.rating }}/5 | {{ review.location }} | 
+            By {{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}
+        </h6>
+        <p class="card-text">{{ review.content }}</p>
+        
+        {% if user == review.user %}
+            <div class="mt-3">
+                <a href="{% url 'review-update' review.pk %}" class="btn btn-secondary">Edit</a>
+                <a href="{% url 'review-delete' review.pk %}" class="btn btn-danger">Delete</a>
+            </div>
+        {% endif %}
+        
+        <a href="{% url 'review-list' %}" class="card-link mt-3">Back to all reviews</a>
+    </div>
+</div>
+{% endblock %}

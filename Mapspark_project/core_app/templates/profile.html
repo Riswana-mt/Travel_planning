@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .profile-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #4285F4;
+}
+
+.profile-details {
+    margin-top: 30px;
+}
+
+.detail-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+    font-weight: 600;
+    width: 150px;
+    color: #555;
+}
+
+.detail-value {
+    flex: 1;
+}
+</style>
+<div class="profile-container">
+    <div class="profile-header">
+        {% if google_account %}
+        <img src="{{ google_account.get_avatar_url }}" alt="Profile Picture" class="profile-picture">
+        {% endif %}
+        <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+        <p>{{ user.email }}</p>
+    </div>
+    
+    <div class="profile-details">
+        <h2>Account Information</h2>
+        <div class="detail-item">
+            <span class="detail-label">Username:</span>
+            <span class="detail-value">{{ user.username }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Email:</span>
+            <span class="detail-value">{{ user.email }}</span>
+        </div>
+        {% if google_account %}
+        <div class="detail-item">
+            <span class="detail-label">Connected with Google</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

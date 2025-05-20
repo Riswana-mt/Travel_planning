@@ -1,0 +1,16 @@
+<div class="row">
+    {% for outdoor in outdoors %}
+      <div class="col-md-2 col-6 mb-3">
+        <div class="card h-100">
+          {% if outdoor.image %}
+            <img src="{{ outdoor.image.url }}" class="card-img-top" alt="{{ outdoor.name }}">
+          {% endif %}
+          <div class="card-body text-center">
+            <h6 class="card-title mb-0">{{ outdoor.name }}</h6>
+            <small class="text-muted">{{ outdoor.km }}away</small>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  

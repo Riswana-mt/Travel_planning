@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            color: #2a9d8f;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .item-block {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        hr {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1 align="center">My Travel Plan</h1>
+
+{% for destination in destinations %}
+    <div class="section">
+        <h2>{{ destination.name }} ({{ destination.country }})</h2>
+        <p class="italic">Best time to visit: {{ destination.best_time_to_visit }}</p>
+        <p>{{ destination.description }}</p>
+
+        <h3>Itinerary</h3>
+        {% for i in itineraries %}
+            {% if i.destination.id == destination.id %}
+            <div class="item-block">
+                <div><span class="label">Date:</span> {{ i.date }}</div>
+                <div><span class="label">Activity:</span> {{ i.activity }}</div>
+                <div><span class="label">Notes:</span> {{ i.notes }}</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <h3>Budget</h3>
+        {% for b in budgets %}
+            {% if b.destination.id == destination.id %}
+            <div class="item-block">
+                <div><span class="label">Category:</span> {{ b.category }}</div>
+                <div><span class="label">Amount:</span> ₹{{ b.amount }}</div>
+                <div><span class="label">Notes:</span> {{ b.notes }}</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <h3>Packing List</h3>
+        {% for p in packing_items %}
+            {% if p.destination.id == destination.id %}
+            <div class="item-block">
+                <div><span class="label">Item:</span> {{ p.name }}</div>
+                <div><span class="label">Category:</span> {{ p.get_category_display }}</div>
+                <div><span class="label">Quantity:</span> {{ p.quantity }}</div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <hr>
+    </div>
+{% endfor %}
+
+</body>
+</html>

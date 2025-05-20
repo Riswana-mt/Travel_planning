@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="card mx-auto" style="max-width: 500px;">
+            <div class="card-header bg-primary text-white">
+                <h2>Complete Booking</h2>
+            </div>
+            <div class="card-body">
+                <h4 id="hotelName">Hotel Name</h4>
+                <p id="hotelDetails">Location • Price</p>
+                <hr>
+                <div id="paypal-button-container" 
+                     class="mt-4"
+                      data-price="{{ hotel.price }}"
+                         data-hotel-name="{{ hotel.name }}"
+                            data-session-key="{{ request.session.session_key }}">
+                        </div>
+                <p class="text-muted mt-3">You'll be redirected to PayPal to complete payment.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load PayPal SDK just once with your actual client ID -->
+<script src="https://www.paypal.com/sdk/js?client-id=AZlIQdzYVj6zZb63f__YtMJzoL054SzjJpxyljPBqGvdsHHhXVyIrcRG3tsr043K11RzqULWjERnQGrQ&currency=USD"></script>
+
+<div id="paypal-button-container" class="mt-4"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get values from data attributes or JavaScript variables
+    const price = document.getElementById('paypal-button-container').getAttribute('data-price') || '0';
+    const hotelName = document.getElementById('paypal-button-container').getAttribute('data-hotel-name') || '';
+    const sessionKey = document.getElementById('paypal-button-container').getAttribute('data-session-key') || '';
+
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: price,
+                        currency_code: 'USD',
+                        breakdown: {
+                            item_total: {
+                                currency_code: 'USD',
+                                value: price
+                            }
+                        }
+                    },
+                    description: "Booking at " + hotelName,
+                    custom_id: sessionKey
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                const form = document.getElementById('bookingForm');
+                const addHiddenField = (form, name, value) => {
+                    let input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = value;
+                    form.appendChild(input);
+                };
+                addHiddenField(form, 'paypal_order_id', data.orderID);
+                addHiddenField(form, 'paypal_payer_id', details.payer.payer_id);
+                form.submit();
+            });
+        },
+        onError: function(err) {
+            console.error('PayPal error:', err);
+            alert("Payment failed. Please try again or contact support.");
+        }
+    }).render('#paypal-button-container');
+});
+</script>
+</body>
+</html>

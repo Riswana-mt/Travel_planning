@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Search</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hotel-card {
+            transition: transform 0.3s;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .hotel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .hotel-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .price-tag {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #0d6efd;
+        }
+        .rating {
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .no-results {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        .featured-destinations {
+            margin: 30px 0;
+        }
+        .featured-card {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            height: 150px;
+        }
+        .featured-card img {
+            transition: transform 0.5s;
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+        .featured-card:hover img {
+            transform: scale(1.1);
+        }
+        .featured-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <!-- Search Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="text-center mb-4">Find Your Perfect Hotel</h1>
+                <form id="searchForm" onsubmit="handleSearch(event)">
+                    <div class="input-group">
+                        <input type="text" id="countryInput" class="form-control py-3" 
+                               placeholder="Where would you like to go? (e.g., New Delhi)" required>
+                        <button type="submit" class="btn btn-primary py-3">
+                            <i class="fas fa-search me-2"></i> Find Hotels
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Featured Destinations -->
+        <div class="featured-destinations mt-5">
+            <h3 class="mb-4">Featured Destinations</h3>
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <div class="featured-card" onclick="searchDestination('USA')">
+                        <img src="https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="USA">
+                        <div class="featured-overlay">
+                            <h5>United States</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="featured-card" onclick="searchDestination('France')">
+                        <img src="https://images.unsplash.com/photo-1431274172761-fca41d930114?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="France">
+                        <div class="featured-overlay">
+                            <h5>France</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="featured-card" onclick="searchDestination('Japan')">
+                        <img src="https://images.unsplash.com/photo-1492571350019-22de08371fd3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Japan">
+                        <div class="featured-overlay">
+                            <h5>Japan</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="featured-card" onclick="searchDestination('Italy')">
+                        <img src="https://images.unsplash.com/photo-1498307833015-e7b400441eb8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Italy">
+                        <div class="featured-overlay">
+                            <h5>Italy</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Searching for hotels...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="mt-5">
+            <!-- Results will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Handle form submission
+        function handleSearch(event) {
+            event.preventDefault();
+            searchHotels();
+        }
+
+        // Configuration
+        const RAPIDAPI_KEY = "d10284f4f3msha979a7cb81b9a3bp170304jsn618ba784b611";
+        const MOCK_HOTELS = {
+            "usa": [
+                { 
+                    name: "Grand Hyatt New York", 
+                    address: "109 E 42nd St, New York, NY", 
+                    price: 350, 
+                    rating: 4.7,
+                    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+                    amenities: ["wifi", "pool", "gym", "restaurant"]
+                },
+                { 
+                    name: "The Beverly Hills Hotel", 
+                    address: "9641 Sunset Blvd, Beverly Hills, CA", 
+                    price: 595, 
+                    rating: 4.9,
+                    image: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+                    amenities: ["wifi", "spa", "pool", "restaurant"]
+                }
+            ],
+            "france": [
+                { 
+                    name: "Hôtel Ritz Paris", 
+                    address: "15 Place Vendôme, 75001 Paris", 
+                    price: 1200, 
+                    rating: 4.9,
+                    image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+                    amenities: ["wifi", "spa", "pool", "bar"]
+                }
+            ],
+            "japan": [
+                { 
+                    name: "Park Hotel Tokyo", 
+                    address: "1-7-1 Higashi-Shimbashi, Minato-ku, Tokyo", 
+                    price: 280, 
+                    rating: 4.5,
+                    image: "https://images.unsplash.com/photo-1536599424071-0b215a388ba7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+                    amenities: ["wifi", "restaurant", "gym"]
+                }
+            ]
+        };
+
+        // Search for featured destination
+        function searchDestination(destination) {
+            document.getElementById('countryInput').value = destination;
+            searchHotels();
+        }
+
+        // Main search function
+        async function searchHotels() {
+            const country = document.getElementById('countryInput').value.trim();
+            if (!country) return alert('Please enter a destination');
+
+            showLoading(true);
+            
+            try {
+                const apiHotels = await fetchRealHotels(country);
+                if (apiHotels.length > 0) {
+                    displayResults(apiHotels, `Hotels in ${country}`);
+                } else {
+                    const mockData = MOCK_HOTELS[country.toLowerCase()] || [];
+                    if (mockData.length > 0) {
+                        displayResults(mockData, `Featured hotels in ${country}`);
+                    } else {
+                        displayNoResults(country);
+                    }
+                }
+            } catch (error) {
+                console.error("Search failed:", error);
+                displayError();
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Fetch real hotels from API
+        async function fetchRealHotels(country) {
+            try {
+                const response = await fetch(
+                    `https://travel-advisor.p.rapidapi.com/locations/search?query=${country}&limit=5`,
+                    {
+                        headers: {
+                            "X-RapidAPI-Key": RAPIDAPI_KEY,
+                            "X-RapidAPI-Host": "travel-advisor.p.rapidapi.com"
+                        }
+                    }
+                );
+                
+                const data = await response.json();
+                return data.data
+                    .filter(item => item.result_type === "lodging")
+                    .map(hotel => ({
+                        name: hotel.name,
+                        address: hotel.address || "Address not available",
+                        price: hotel.price || Math.floor(Math.random() * 300) + 50,
+                        rating: hotel.rating,
+                        image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+                        amenities: ["wifi", "pool", "restaurant"]
+                    }));
+            } catch (error) {
+                console.error("API Error:", error);
+                return [];
+            }
+        }
+
+        // Display results
+        function displayResults(hotels, title = "") {
+            const resultsDiv = document.getElementById('results');
+            
+            if (hotels.length === 0) {
+                displayNoResults();
+                return;
+            }
+
+            let html = `
+                <h2 class="mb-4 fw-bold">${title}</h2>
+                <div class="row">
+            `;
+            
+            hotels.forEach(hotel => {
+                html += `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card hotel-card h-100" onclick="selectHotel('${hotel.name.replace(/'/g, "\\'")}', '${hotel.address.replace(/'/g, "\\'")}', ${hotel.price})">
+                            <img src="${hotel.image || 'https://via.placeholder.com/800x500'}" class="hotel-img" alt="${hotel.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${hotel.name}</h5>
+                                <p class="card-text text-muted">
+                                    <i class="fas fa-map-marker-alt"></i> ${hotel.address}
+                                </p>
+                                <div class="amenities mb-3">
+                                    ${hotel.amenities ? hotel.amenities.map(amenity => `
+                                        <span class="badge bg-light text-dark me-1 mb-1">
+                                            <i class="fas fa-${amenity === 'wifi' ? 'wifi' : 
+                                              amenity === 'pool' ? 'swimming-pool' : 
+                                              amenity === 'gym' ? 'dumbbell' : 
+                                              amenity === 'spa' ? 'spa' : 
+                                              amenity === 'restaurant' ? 'utensils' : 
+                                              amenity === 'bar' ? 'glass-martini-alt' : 'wifi'}"></i> ${amenity}
+                                        </span>
+                                    `).join('') : ''}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price-tag">$${hotel.price}/night</span>
+                                    ${hotel.rating ? `<span class="rating"><i class="fas fa-star"></i> ${hotel.rating}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            resultsDiv.innerHTML = html;
+        }
+
+        function selectHotel(name, address, price, image = '', amenities = []) {
+    // Construct URL with all needed parameters
+    const params = new URLSearchParams();
+    params.append('name', name);
+    params.append('address', address);
+    params.append('price', price);
+    if (image) params.append('image', image);
+    if (amenities.length) params.append('amenities', amenities.join(','));
+    
+    // Use Django's URL reverse or the direct path
+    window.location.href = `booking/?${params.toString()}`;
+}
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            if (show) {
+                document.getElementById('results').innerHTML = '';
+            }
+        }
+
+        function displayNoResults(country = "") {
+            document.getElementById('results').innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+                    <h4>No hotels found ${country ? 'in ' + country : ''}</h4>
+                    <p class="text-muted">Try searching for another destination</p>
+                    <button class="btn btn-primary mt-3" onclick="document.getElementById('countryInput').focus()">
+                        Search Again
+                    </button>
+                </div>
+            `;
+        }
+
+        function displayError() {
+            document.getElementById('results').innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3 text-warning"></i>
+                    <h4>Connection Error</h4>
+                    <p class="text-muted">We're showing demo data for now</p>
+                </div>
+            `;
+            // Show mock data
+            const allMockHotels = Object.values(MOCK_HOTELS).flat();
+            displayResults(allMockHotels, "Featured Hotels");
+        }
+    </script>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

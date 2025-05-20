@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Itinerary{% endblock %}
+
+{% block content %}
+<style>
+    /* Professional color scheme and variables */
+    :root {
+        --primary: #3a5bbc;
+        --primary-light: #eaefff;
+        --primary-dark: #2a4399;
+        --secondary: #6c757d;
+        --success: #28a745;
+        --danger: #dc3545;
+        --light: #f8f9fa;
+        --dark: #343a40;
+        --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        --radius: 8px;
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background-color: #f5f7fa;
+    }
+    
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.75rem;
+    }
+    
+    .itinerary-container {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    /* Form styling */
+    .form-card {
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: none;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    
+    .form-card .card-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 1.25rem 1.5rem;
+        border-bottom: none;
+        font-weight: 600;
+    }
+    
+    .form-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .btn-add {
+        background: var(--primary);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        border: none;
+        box-shadow: 0 2px 5px rgba(58, 91, 188, 0.3);
+        transition: var(--transition);
+    }
+    
+    .btn-add:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(58, 91, 188, 0.4);
+    }
+    
+    /* Itinerary table styling */
+    .itinerary-card {
+        background-color: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: none;
+        overflow: hidden;
+    }
+    
+    .itinerary-card .card-header {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        padding: 1.25rem 1.5rem;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .itinerary-card .card-header h5 {
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+    
+    .table-responsive {
+        border-radius: 0 0 var(--radius) var(--radius);
+        overflow: hidden;
+    }
+    
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table thead th {
+        background-color: #f8fafd;
+        font-weight: 600;
+        color: var(--dark);
+        padding: 1rem 1.5rem;
+        border-top: none;
+        border-bottom: 2px solid #eaedf2;
+    }
+    
+    .table tbody td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        border-top: 1px solid #eaedf2;
+    }
+    
+    .table tbody tr {
+        transition: var(--transition);
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(58, 91, 188, 0.04);
+    }
+    
+    .day-divider {
+        background-color: var(--primary-light);
+    }
+    
+    .day-divider td {
+        font-weight: 600;
+        color: var(--primary);
+        padding: 0.75rem 1.5rem !important;
+    }
+    
+    .time-cell {
+        font-weight: 500;
+        color: var(--secondary);
+        white-space: nowrap;
+        width: 100px;
+    }
+    
+    .activity-title {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.25rem;
+    }
+    
+    .activity-description {
+        color: var(--secondary);
+        margin-bottom: 0;
+        line-height: 1.5;
+    }
+    
+    .action-cell {
+        white-space: nowrap;
+        width: 100px;
+        text-align: right;
+    }
+    
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        line-height: 36px;
+        text-align: center;
+        border-radius: 50%;
+        margin-left: 0.5rem;
+        transition: var(--transition);
+    }
+    
+    .btn-delete {
+        color: white;
+        background-color: var(--danger);
+        border: none;
+    }
+    
+    .btn-delete:hover {
+        background-color: #c82333;
+        transform: translateY(-2px);
+    }
+    
+    .btn-view-all {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        transition: var(--transition);
+    }
+    
+    .btn-view-all:hover {
+        background-color: rgba(255, 255, 255, 0.25);
+    }
+    
+    /* Empty state styling */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background-color: white;
+        border-radius: 0 0 var(--radius) var(--radius);
+    }
+    
+    .empty-state-icon {
+        font-size: 3.5rem;
+        color: #d1d9e6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-state h5 {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.75rem;
+    }
+    
+    .empty-state p {
+        color: var(--secondary);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .table thead {
+            display: none;
+        }
+        
+        .table tbody tr {
+            display: block;
+            border-bottom: 1px solid #eaedf2;
+        }
+        
+        .table tbody td {
+            display: block;
+            text-align: right;
+            border-top: none;
+            padding: 0.75rem 1rem;
+        }
+        
+        .table tbody td:before {
+            content: attr(data-label);
+            float: left;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .time-cell, .action-cell {
+            width: auto;
+        }
+        
+        .day-divider td {
+            text-align: left;
+        }
+        
+        .day-divider td:before {
+            display: none;
+        }
+    }
+</style>
+
+<button class="btn btn-outline center" onclick="window.history.back()">
+    <i class="fas fa-arrow-left btn-icon"></i> Back
+</button>
+
+<div class="itinerary-container">
+    <div class="page-header">
+        <h2 class="page-title">
+            <i class="fas fa-route mr-2"></i>Travel Itinerary
+        </h2>
+        <p class="text-muted">Plan and organize your travel activities</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 col-md-5 mb-4">
+            <div class="form-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle mr-2"></i>Add New Activity</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-add mt-3 w-100">
+                            <i class="fas fa-calendar-plus mr-2"></i>Add to Itinerary
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 col-md-7">
+            <div class="itinerary-card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-map-marked-alt mr-2"></i>Your Travel Plan</h5>
+                    {% if destination_id %}
+                    <a href="{% url 'itinerary' %}" class="btn btn-view-all btn-sm">
+                        <i class="fas fa-globe-americas mr-1"></i>View All Itineraries
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    {% if itineraries %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%">Time</th>
+                                    <th style="width: 60%">Activity</th>
+                                    <th style="width: 25%" class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% regroup itineraries by date as itinerary_days %}
+                                {% for day in itinerary_days %}
+                                <tr class="day-divider">
+                                    <td colspan="3" data-label="">
+                                        <i class="far fa-calendar-alt mr-2"></i>
+                                        {{ day.grouper|date:"l, F j, Y" }}
+                                    </td>
+                                </tr>
+                                {% for item in day.list %}
+                                <tr>
+                                    <td class="time-cell" data-label="Time">
+                                        {% if item.time %}
+                                        <i class="far fa-clock mr-1"></i>{{ item.time|time:"g:i A" }}
+                                        {% else %}
+                                        <span class="text-muted">Flexible</span>
+                                        {% endif %}
+                                    </td>
+                                    <td data-label="Activity">
+                                        <h6 class="activity-title">{{ item.title }}</h6>
+                                        <p class="activity-description">{{ item.activities }}</p>
+                                    </td>
+                                    <td class="action-cell" data-label="Actions">
+                                        <a href="{% url 'delete-item' 'itinerary' item.id %}" class="btn btn-action btn-delete" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="far fa-calendar-plus"></i>
+                        </div>
+                        <h5>No Itinerary Items Yet</h5>
+                        <p>Build your perfect travel plan by adding activities, accommodations, transportation, and more.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

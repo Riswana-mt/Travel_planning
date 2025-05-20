@@ -1,0 +1,19 @@
+{% if places %}
+  <div class="row">
+    {% for place in places %}
+      <div class="col-md-3 col-6 mb-3">
+        <div class="card">
+          {% if place.image %}
+            <img src="{{ place.image.url }}" class="card-img-top" alt="{{ place.name }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ place.name }}</h5>
+            <p class="card-text">{{ place.km }}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No places found in this category.</p>
+{% endif %}

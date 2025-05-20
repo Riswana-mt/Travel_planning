@@ -1,0 +1,64 @@
+<!-- templates/payments/product_detail.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ product.name }}</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ product.description }}</p>
+            <h3 class="card-title">${{ product.price }}</h3>
+            
+            <!-- PayPal Button Container -->
+            <div id="paypal-button-container"></div>
+        </div>
+    </div>
+</div>
+
+<!-- PayPal JavaScript SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=USD"></script>
+
+<script>
+    // Render the PayPal button
+    paypal.Buttons({
+        // Set up the transaction
+        createOrder: function(data, actions) {
+            return fetch('/payments/api/create-paypal-order/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: '{{ product.id }}'
+                })
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                // Store the order ID for later use
+                window.orderId = data.id;
+                // Redirect to PayPal approval URL
+                window.location.href = data.approval_url;
+                return data.id;
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('There was an error creating your order. Please try again.');
+            });
+        },
+        
+        // This function is not needed since we redirect to PayPal
+        onApprove: function(data, actions) {
+            // We handle this via the success URL redirect
+            return actions.order.capture();
+        }
+    }).render('#paypal-button-container');
+</script>
+{% endblock %}

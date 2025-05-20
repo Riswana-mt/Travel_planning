@@ -1,0 +1,16 @@
+<div class="row">
+    {% for rel in relax %}
+      <div class="col-md-2 col-6 mb-3">
+        <div class="card h-100">
+          {% if rel.image %}
+            <img src="{{ rel.image.url }}" class="card-img-top" alt="{{ rel.name }}">
+          {% endif %}
+          <div class="card-body text-center">
+            <h6 class="card-title mb-0">{{ rel.name }}</h6>
+            <small class="text-muted">{{ rel.km }}away</small>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  

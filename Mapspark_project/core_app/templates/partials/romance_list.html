@@ -1,0 +1,16 @@
+<div class="row">
+    {% for rom in romance %}
+      <div class="col-md-2 col-6 mb-3">
+        <div class="card h-100">
+          {% if rom.image %}
+            <img src="{{ rom.image.url }}" class="card-img-top" alt="{{ rom.name }}">
+          {% endif %}
+          <div class="card-body text-center">
+            <h6 class="card-title mb-0">{{ rom.name }}</h6>
+            <small class="text-muted">{{ rom.km }}away</small>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  

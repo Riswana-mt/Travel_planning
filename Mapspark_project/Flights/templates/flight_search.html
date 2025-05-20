@@ -1,0 +1,518 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapspark - Flight Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0071c2;
+            --accent-blue: #0071c2;
+            --yellow: #feba02;
+            --light-gray: #f5f5f5;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar {
+            background-color: var(--primary-blue) !important;
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        
+        .nav-link, .btn-nav {
+            color: white !important;
+            margin-right: 1rem;
+            font-weight: 500;
+        }
+        
+        .flight-card {
+            transition: all 0.3s;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+        
+        .flight-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .btn-search {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+            height: 50px;
+            font-weight: bold;
+        }
+        
+        .btn-search:hover {
+            background-color: #003580;
+            border-color: #003580;
+        }
+        
+        .fare-option {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            width: 150px;
+        }
+        
+        .fare-option:hover {
+            border-color: var(--accent-blue);
+        }
+        
+        .fare-option.best {
+            border-color: var(--accent-blue);
+            position: relative;
+        }
+        
+        .fare-option.best::after {
+            content: "BEST OVERALL";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-blue);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .fare-tabs .btn {
+            border-radius: 20px;
+            margin-right: 8px;
+            padding: 6px 16px;
+        }
+        
+        .fare-tabs .btn.active {
+            background-color: #f5f5f5;
+            font-weight: 500;
+        }
+        
+        .flight-filters .btn {
+            border-radius: 6px;
+            margin-right: 8px;
+            background-color: white;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+        
+        .search-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .search-form {
+            background-color: var(--yellow);
+            border-radius: 0 0 8px 8px;
+            padding: 20px;
+        }
+        
+        .nav-tabs-container {
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .destination-section {
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .destination-heading {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .form-control {
+            height: 45px;
+        }
+        
+        .swap-icon {
+            background-color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        .position-relative {
+            position: relative;
+        }
+
+        .btn-book {
+            background-color: var(--yellow);
+            color: #333;
+            font-weight: bold;
+            margin-top: 8px;
+            width: 100%;
+        }
+        
+        .btn-book:hover {
+            background-color: #e6a502;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Mapspark</a>
+            <div class="d-flex align-items-center">
+                
+
+                
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container-fluid bg-white border-bottom py-3">
+        <div class="container">
+            <div class="d-flex flex-wrap">
+                <a href="{% url 'index' %}" class="text-decoration-none me-4 mb-2">
+                    <i class="fas fa-hotel me-2"></i> Stays
+                </a>
+                <a href="#" class="text-decoration-none me-4 mb-2 fw-bold text-primary">
+                    <i class="fas fa-plane me-2"></i> Flights
+                </a>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <!-- Page Heading -->
+        <h1 class="mb-1 fw-bold">Compare and book cheap flights with ease</h1>
+        <p class="mb-4">Discover your next dream destination</p>
+        
+        
+        <div class="search-container mb-4">
+            <!-- Flight Search Form --
+            <div class="card-body pt-3 pb-0">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" name="tripType" id="roundTrip">
+                            <label class="form-check-label" for="roundTrip">Round trip</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" name="tripType" id="oneWay" checked>
+                            <label class="form-check-label" for="oneWay">One way</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" name="tripType" id="multiCity">
+                            <label class="form-check-label" for="multiCity">Multi-city</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" id="directFlights">
+                            <label class="form-check-label" for="directFlights">Direct flights only</label>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+            
+            <div class="search-form">
+                <form method="post" class="mb-0">
+                    {% csrf_token %}
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-plane-departure text-primary"></i>
+                                </span>
+                                <input type="text" name="origin" class="form-control border-start-0" placeholder="Where from?" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 position-relative">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-plane-arrival text-primary"></i>
+                                </span>
+                                <input type="text" name="destination" class="form-control border-start-0" placeholder="Where to?" required>
+                            </div>
+                            <div class="swap-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-calendar text-primary"></i>
+                                </span>
+                                <input type="date" name="date" class="form-control border-start-0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-user text-primary"></i>
+                                </span>
+                                <button class="form-control border-start-0 text-start dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    1 Traveler
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">1 Traveler</a></li>
+                                    <li><a class="dropdown-item" href="#">2 Travelers</a></li>
+                                    <li><a class="dropdown-item" href="#">3+ Travelers</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-search w-100">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Breadcrumb Navigation --
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" class="text-decoration-none"><i class="fas fa-arrow-left"></i> Back</a></li>
+                <li class="breadcrumb-item active">Departure</li>
+                <li class="breadcrumb-item">Review Itinerary</li>
+                <li class="breadcrumb-item">Customize</li>
+            </ol>
+        </nav>
+        
+        <!-- Flight Route Information -->
+        <div class="mb-3">
+            <h5 class="mb-1 fw-bold">
+                <span id="origin-display">Origin</span> - <span id="destination-display">Destination</span>
+            </h5>
+            <div class="d-flex align-items-center text-muted small">
+                <i class="fas fa-plane-departure me-2"></i>
+                <span>Departure</span>
+                <i class="fas fa-calendar-alt mx-2"></i>
+                <span id="date-display">Select a date</span>
+            </div>
+        </div>
+
+        <!-- Filter Options --
+        <div class="flight-filters d-flex flex-wrap mb-4">
+            <div class="dropdown me-2 mb-2">
+                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-filter me-1"></i> Stops
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Any</a></li>
+                    <li><a class="dropdown-item" href="#">Nonstop only</a></li>
+                    <li><a class="dropdown-item" href="#">1 stop max</a></li>
+                </ul>
+            </div>
+            <div class="dropdown me-2 mb-2">
+                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-dollar-sign me-1"></i> Price
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Any</a></li>
+                    <li><a class="dropdown-item" href="#">Under ₹2000</a></li>
+                    <li><a class="dropdown-item" href="#">₹2000 - ₹40000</a></li>
+                    <li><a class="dropdown-item" href="#">₹4000+</a></li>
+                </ul>
+            </div>
+            <div class="dropdown me-2 mb-2">
+                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-plane me-1"></i> Airline
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">All Airlines</a></li>
+                </ul>
+            </div>
+            <div class="dropdown me-2 mb-2">
+                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-clock me-1"></i> Time
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Any Time</a></li>
+                    <li><a class="dropdown-item" href="#">Morning</a></li>
+                    <li><a class="dropdown-item" href="#">Afternoon</a></li>
+                    <li><a class="dropdown-item" href="#">Evening</a></li>
+                </ul>
+            </div>
+            <div class="dropdown mb-2">
+                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-building me-1"></i> Airports
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">All Airports</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Fare Type Tabs 
+        <div class="fare-tabs d-flex flex-wrap mb-4">
+            <button class="btn active">Recommended</button>
+            <button class="btn">Basic</button>
+            <button class="btn">Standard</button>
+            <button class="btn">Enhanced</button>
+            <button class="btn">Premium</button>
+            <button class="btn">Luxury</button>
+        </div>
+        
+        <!-- Display Error Message -->
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <!-- Flight Results -->
+        {% if flights %}
+            <div class="flight-results">
+                {% for flight in flights %}
+                <div class="card flight-card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <div class="d-flex align-items-center">
+                                    <div class="airline-logo me-3 bg-light p-2 rounded">
+                                        <i class="fas fa-plane text-primary"></i>
+                                    </div>
+                                    <div class="flight-info">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <h5 class="mb-0 me-2">{{ flight.itineraries.0.segments.0.departure.at|slice:"11:16" }}</h5>
+                                            <i class="fas fa-long-arrow-alt-right mx-2"></i>
+                                            <h5 class="mb-0">{{ flight.itineraries.0.segments.0.arrival.at|slice:"11:16" }}</h5>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold">{{ flight.validatingAirlineCodes.0 }}</span>
+                                            <div class="d-flex text-muted small">
+                                                <span>{{ flight.itineraries.0.segments.0.departure.iataCode }} - {{ flight.itineraries.0.segments.0.arrival.iataCode }}</span>
+                                                <span class="mx-2">•</span>
+                                                <span>{{ flight.itineraries.0.duration|slice:"2:" }}</span>
+                                                <span class="mx-2">•</span>
+                                                <span>{{ flight.itineraries.0.segments|length|pluralize:"Nonstop,1 Stop" }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="d-flex justify-content-end">
+                                    <div class="fare-option text-center mx-2">
+                                        <div class="small text-muted">Economy</div>
+                                        <h5 class="mb-0">${{ flight.price.total }}</h5>
+                                        <div class="small text-muted">One-way</div>
+                                        <a href="payment?airline={{ flight.validatingAirlineCodes.0 }}&origin={{ flight.itineraries.0.segments.0.departure.iataCode }}&destination={{ flight.itineraries.0.segments.0.arrival.iataCode }}&price={{ flight.price.total }}&type=Economy" class="btn btn-book">Book Now</a>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Destination Spotlight Section (when no flights) -->
+            <div class="destination-section mb-4">
+                <h2 class="destination-heading">A spotlight on Brazil</h2>
+                <p class="mb-4">Soak up its bustling cities, cuisine and carnival. Whether you marvel at its first-class sunsets, or explore its rich rainforests, Brazil offers something vibrant, diverse and addictive. Check these top destinations you can fly to year round.</p>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <img src="https://www.lawjure.com/wp-content/uploads/2020/10/Travel-blog-photo.jpg" class="card-img-top" alt="Brazil Beach">
+                            <div class="card-body">
+                                <h5 class="card-title">Rio de Janeiro</h5>
+                                <p class="card-text text-muted">Experience the vibrant culture and beautiful beaches</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <img src="https://www.lawjure.com/wp-content/uploads/2020/10/Travel-blog-photo.jpg" class="card-img-top" alt="Salvador">
+                            <div class="card-body">
+                                <h5 class="card-title">Salvador</h5>
+                                <p class="card-text text-muted">Discover colonial architecture and Afro-Brazilian culture</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <img src="https://www.lawjure.com/wp-content/uploads/2020/10/Travel-blog-photo.jpg" class="card-img-top" alt="Amazon">
+                            <div class="card-body">
+                                <h5 class="card-title">Amazon Rainforest</h5>
+                                <p class="card-text text-muted">Explore the world's largest tropical rainforest</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center p-5 bg-white rounded shadow-sm mt-4">
+                <i class="fas fa-plane-departure display-1 text-muted mb-3"></i>
+                <h4>Search for flights to see results</h4>
+                <p class="text-muted">Enter your travel details above to find available flights</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set form values in the UI display
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const originInput = form.querySelector('input[name="origin"]');
+            const destinationInput = form.querySelector('input[name="destination"]');
+            const dateInput = form.querySelector('input[name="date"]');
+            
+            const originDisplay = document.getElementById('origin-display');
+            const destinationDisplay = document.getElementById('destination-display');
+            const dateDisplay = document.getElementById('date-display');
+            
+            // Update displays when inputs change
+            originInput.addEventListener('change', function() {
+                originDisplay.textContent = this.value ? this.value : 'Origin';
+            });
+            
+            destinationInput.addEventListener('change', function() {
+                destinationDisplay.textContent = this.value ? this.value : 'Destination';
+            });
+            
+            dateInput.addEventListener('change', function() {
+                const date = new Date(this.value);
+                const options = { month: 'short', day: 'numeric', year: 'numeric' };
+                dateDisplay.textContent = date.toLocaleDateString('en-US', options);
+            });
+        });
+    </script>
+</body>
+</html>

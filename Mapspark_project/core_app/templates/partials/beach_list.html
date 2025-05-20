@@ -1,0 +1,122 @@
+<!----<div class="row">
+    {% for beach in beaches %}
+      <div class="col-md-2 col-6 mb-3">
+        <div class="card h-100">
+          {% if beach.image %}
+            <img src="{{ beach.image.url }}" class="card-img-top" alt="{{ beach.name }}">
+          {% endif %}
+          <div class="card-body text-center">
+            <h6 class="card-title mb-0">{{ beach.name }}</h6>
+            <small class="text-muted">{{ beach.km }}away</small>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>-->
+
+
+  <style>
+    .beach-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      padding: 20px 0;
+    }
+  
+    .beach-card {
+      width: 160px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      border: none;
+    }
+  
+    .beach-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+  
+    .beach-img {
+      height: 100px;
+      width: 100%;
+      object-fit: cover;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+  
+    .beach-body {
+      padding: 12px;
+      text-align: center;
+    }
+  
+    .beach-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  
+    .beach-distance {
+      font-size: 12px;
+      color: #718096;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+  
+    .beach-distance i {
+      font-size: 10px;
+      color: #f6ad55;
+    }
+  
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .beach-card {
+        width: 140px;
+      }
+      
+      .beach-img {
+        height: 90px;
+      }
+    }
+  
+    @media (max-width: 576px) {
+      .beach-card {
+        width: 120px;
+      }
+      
+      .beach-img {
+        height: 80px;
+      }
+      
+      .beach-name {
+        font-size: 13px;
+      }
+    }
+  </style>
+  
+  <div class="beach-row">
+    {% for beach in beaches %}
+      <div class="beach-card">
+        {% if beach.image %}
+          <img src="{{ beach.image.url }}" class="beach-img" alt="{{ beach.name }}">
+        {% else %}
+          <div class="beach-img" style="background: #e2e8f0;"></div>
+        {% endif %}
+        <div class="beach-body">
+          <h6 class="beach-name">{{ beach.name }}</h6>
+          <small class="beach-distance">
+            <i class="fas fa-map-marker-alt"></i> {{ beach.km }} away
+          </small>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  

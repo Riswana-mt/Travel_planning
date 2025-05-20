@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #1e293b;
+    }
+
+    .page-wrapper {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 80px 24px;
+    }
+
+    .custom-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 32px;
+        margin-bottom: 40px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .custom-card-header {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 1.25rem;
+        padding: 16px 24px;
+        border-radius: 12px 12px 0 0;
+        margin: -32px -32px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-save {
+        background: #15803d;
+        border: none;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: #ffffff;
+        transition: background 0.2s ease;
+    }
+
+    .btn-save:hover {
+        background: #166534;
+    }
+
+    .btn-viewall {
+        background: #ffffff;
+        color: #1e3a8a;
+        font-weight: 600;
+        border: 2px solid #1e3a8a;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-viewall:hover {
+        background: #1e3a8a;
+        color: #ffffff;
+    }
+
+    .budget-details {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 24px;
+        margin-top: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .budget-details-header {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #475569;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .budget-category {
+        min-width: 140px;
+        margin-top: 8px;
+        padding: 12px;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+    }
+
+    .budget-category:hover {
+        background: #e2e8f0;
+    }
+
+    .budget-category label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .budget-category div {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .budget-notes {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .budget-notes label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .budget-notes p {
+        font-size: 0.875rem;
+        color: #1e293b;
+        line-height: 1.5;
+        margin: 0;
+        background: #ffffff;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .text-success {
+        color: #15803d;
+        font-weight: 600;
+    }
+
+    .text-danger {
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    .table {
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+
+    .table th {
+        color: #475569;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .btn-outline-danger {
+        border-color: #dc2626;
+        color: #dc2626;
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc2626;
+        color: #ffffff;
+    }
+
+    .text-muted {
+        color: #64748b;
+    }
+
+    @media (max-width: 768px) {
+        .page-wrapper {
+            padding: 40px 16px;
+        }
+
+        .custom-card {
+            padding: 24px;
+        }
+
+        .budget-category {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .btn-viewall {
+            margin-top: 12px;
+        }
+
+        .custom-card-header {
+            font-size: 1.125rem;
+            padding: 12px 20px;
+        }
+
+        .budget-details {
+            padding: 16px;
+        }
+    }
+</style>
+
+
+ 
+<button class="btn btn-outline center" onclick="window.history.back()">
+    <i class="fas fa-arrow-left btn-icon"></i> Back
+</button>
+<div class="page-wrapper">
+    <div class="row">
+        <!-- Left: Add Budget Form -->
+        <div class="col-md-5">
+            <div class="custom-card">
+                <div class="custom-card-header">Create New Budget</div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-save mt-4">Save Budget</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Budget List -->
+        <div class="col-md-7">
+            <div class="custom-card">
+                <div class="custom-card-header">
+                    <span>Your Budgets</span>
+                    {% if destination_id %}
+                    <a href="{% url 'budget' %}" class="btn btn-viewall">View All Budgets</a>
+                    {% endif %}
+                </div>
+                {% if budgets %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Destination</th>
+                                <th>Total</th>
+                                <th>Spent</th>
+                                <th>Remaining</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for budget in budgets %}
+                            <tr>
+                                <td>{{ budget.destination.name }}</td>
+                                <td>${{ budget.total_budget }}</td>
+                                <td>
+                                    ${{ budget.accommodation|add:budget.transportation|add:budget.food|add:budget.activities }}
+                                </td>
+                                <td class="{% if budget.remaining_budget < 0 %}text-danger{% else %}text-success{% endif %}">
+                                    ${{ budget.remaining_budget }}
+                                </td>
+                                <td>
+                                    <a href="{% url 'delete-item' 'budget' budget.id %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="5">
+                                    <div class="budget-details">
+                                        <div class="budget-details-header">Budget Breakdown</div>
+                                        <div class="d-flex flex-wrap">
+                                            <div class="budget-category me-4">
+                                                <label>Accommodation</label>
+                                                <div>${{ budget.accommodation }}</div>
+                                            </div>
+                                            <div class="budget-category me-4">
+                                                <label>Transportation</label>
+                                                <div>${{ budget.transportation }}</div>
+                                            </div>
+                                            <div class="budget-category me-4">
+                                                <label>Food</label>
+                                                <div>${{ budget.food }}</div>
+                                            </div>
+                                            <div class="budget-category">
+                                                <label>Activities</label>
+                                                <div>${{ budget.activities }}</div>
+                                            </div>
+                                        </div>
+                                        {% if budget.notes %}
+                                        <div class="budget-notes">
+                                            <label>Notes</label>
+                                            <p>{{ budget.notes }}</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mt-3">No budgets have been added yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

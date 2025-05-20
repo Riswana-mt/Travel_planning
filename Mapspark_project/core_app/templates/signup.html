@@ -1,0 +1,417 @@
+{% load static %}
+{% load socialaccount %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .signup-header h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .signup-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .divider span {
+            padding: 0 10px;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .google-btn:hover {
+            background-color: #f8f8f8;
+        }
+
+        .google-icon {
+            margin-right: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #3367d6;
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .otp-input {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .terms {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 20px;
+        }
+
+        .terms a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        #message-container {
+            margin: 15px 0;
+            min-height: 20px;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .success {
+            background-color: #e6ffed;
+            color: #22863a;
+        }
+
+        .error {
+            background-color: #ffeef0;
+            color: #cb2431;
+        }
+
+        #otp-container {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1>Create your account</h1>
+            <p>Sign up to get started</p>
+        </div>
+        
+        <!-- Google Sign In Button -->
+        <div class="text-center mt-3">
+            <a href="{% provider_login_url 'google' %}" class="btn google-btn btn-block">
+                <button class="google-btn">
+                    <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 186.69 190.5">
+                        <g transform="translate(1184.583 765.171)">
+                          <path clip-path="none" mask="none" d="M-1089.333-687.239v36.888h51.262c-2.251 11.863-9.006 21.908-19.137 28.662l30.913 23.986c18.011-16.625 28.402-41.044 28.402-70.052 0-6.754-.606-13.249-1.732-19.483z" fill="#4285f4"/>
+                            <path clip-path="none" mask="none" d="M-1142.714-651.791l-6.972 5.337-24.679 19.223h0c15.673 31.086 47.796 52.561 85.03 52.561 25.717 0 47.278-8.486 63.038-23.033l-30.913-23.986c-8.486 5.715-19.31 9.179-32.125 9.179-24.765 0-45.806-16.712-53.34-39.226z" fill="#34a853"/>
+                            <path clip-path="none" mask="none" d="M-1174.365-712.61c-6.494 12.815-10.217 27.276-10.217 42.689s3.723 29.874 10.217 42.689c0 .086 31.693-24.592 31.693-24.592-1.905-5.715-3.031-11.776-3.031-18.098s1.126-12.383 3.031-18.098z" fill="#fbbc05"/>
+                            <path clip-path="none" mask="none" d="M-1089.333-727.244c14.028 0 26.497 4.849 36.455 14.201l27.276-27.276c-16.539-15.413-38.013-24.852-63.731-24.852-37.234 0-69.359 21.388-85.032 52.561l31.692 24.592c7.533-22.514 28.575-39.226 53.34-39.226z" fill="#ea4335"/>
+                        </g>
+                    </svg>
+                    Sign up with Google
+                </button>
+            </a>
+        </div>
+        
+        <div class="divider"><span>OR</span></div>
+        
+        <!-- Email OTP Form -->
+       <!-- Email OTP Form -->
+<div class="form-container">
+    <form id="email-signup-form" method="POST" action="{% url 'otp_request' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input type="email" class="form-input" id="email" name="email" placeholder="Enter your email" required>
+        </div>           
+        <button type="submit" class="submit-btn">Send OTP</button>
+    </form>
+    
+    <div class="otp-container" id="otp-container" style="display: none;">
+        <h3>Enter OTP sent to your email</h3>
+        <form id="otp-verification-form" method="POST" action="{% url 'otp_verify' %}">
+            {% csrf_token %}
+            <input type="hidden" name="email" id="otp-email">
+            <div class="form-group">
+                <div class="otp-inputs">
+                    <input type="text" class="form-input otp-input" maxlength="1" id="otp-1" name="otp_1" required>
+                    <input type="text" class="form-input otp-input" maxlength="1" id="otp-2" name="otp_2" required>
+                    <input type="text" class="form-input otp-input" maxlength="1" id="otp-3" name="otp_3" required>
+                    <input type="text" class="form-input otp-input" maxlength="1" id="otp-4" name="otp_4" required>
+                    <input type="text" class="form-input otp-input" maxlength="1" id="otp-5" name="otp_5" required>
+                    <input type="text" class="form-input otp-input" maxlength="1" id="otp-6" name="otp_6" required>
+                </div>
+            </div>
+            <button type="submit" class="submit-btn">Verify OTP</button>
+        </form>
+        <p id="timer">OTP expires in: <span id="countdown">300</span> seconds</p>
+        <p><a href="{% url 'otp_resend' %}" id="resend-otp">Resend OTP</a></p>
+        <div id="message-container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+        
+        <p class="terms">
+            By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        </p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const emailForm = document.getElementById('email-signup-form');
+    const otpContainer = document.getElementById('otp-container');
+    const otpEmailField = document.getElementById('otp-email');
+    const resendLink = document.getElementById('resend-otp');
+    const messageContainer = document.getElementById('message-container');
+    const countdownEl = document.getElementById('countdown');
+    
+    let countdownInterval;
+
+    // Handle OTP input auto-focus
+    const setupOtpInputs = () => {
+        const inputs = document.querySelectorAll('.otp-input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === this.maxLength) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+    };
+
+    setupOtpInputs();
+
+    // Start countdown timer
+    const startCountdown = (seconds) => {
+        clearInterval(countdownInterval);
+        let timeLeft = seconds;
+        
+        countdownEl.textContent = timeLeft;
+        
+        countdownInterval = setInterval(() => {
+            timeLeft--;
+            countdownEl.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                showMessage('OTP has expired. Please request a new one.', 'error');
+            }
+        }, 1000);
+    };
+
+    // Show message function
+    const showMessage = (message, type) => {
+        messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+        
+        setTimeout(() => {
+            messageContainer.innerHTML = '';
+        }, 5000);
+    };
+
+    // Handle email form submission with AJAX
+    emailForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        const formData = new FormData(this);
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage('OTP sent to your email', 'success');
+                otpContainer.style.display = 'block';
+                otpEmailField.value = email;
+                startCountdown(300);
+                
+                // Reset OTP inputs
+                document.querySelectorAll('.otp-input').forEach(input => {
+                    input.value = '';
+                });
+                document.getElementById('otp-1').focus();
+            } else {
+                showMessage(data.error || 'Error sending OTP', 'error');
+            }
+        })
+        .catch(error => {
+            showMessage('Error sending OTP. Please try again.', 'error');
+            console.error('Error:', error);
+        });
+    });
+
+    // Handle OTP form submission with AJAX
+    document.getElementById('otp-verification-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect_url || '/dashboard/';
+            } else {
+                showMessage(data.error || 'Invalid OTP', 'error');
+            }
+        })
+        .catch(error => {
+            showMessage('Error verifying OTP. Please try again.', 'error');
+            console.error('Error:', error);
+        });
+    });
+
+    // Handle resend OTP
+    resendLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const email = otpEmailField.value;
+        if (!email) {
+            showMessage('No email found. Please request a new OTP.', 'error');
+            return;
+        }
+        
+        fetch(this.href, {
+            method: 'POST',
+            body: JSON.stringify({ email: email }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage('New OTP has been sent', 'success');
+                startCountdown(300);
+            } else {
+                showMessage(data.error || 'Error resending OTP', 'error');
+            }
+        })
+        .catch(error => {
+            showMessage('Error resending OTP. Please try again.', 'error');
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
+</body>
+</html>

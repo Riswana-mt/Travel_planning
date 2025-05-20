@@ -1,0 +1,10 @@
+Hello,
+
+Your one-time password (OTP) for login is: {{ otp_token }}
+
+This OTP is valid for 10 minutes.
+
+If you didn't request this, please ignore this email.
+
+Thank you,
+The TravelPlanner Team

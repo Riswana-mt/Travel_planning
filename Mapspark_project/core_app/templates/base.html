@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Include Tailwind CSS CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <!-- Include Font Awesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </head>
+    <body class="flex flex-col min-h-screen">
+        <header class="bg-white shadow-md sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <nav class="flex items-center w-full">
+                    <div class="logo text-2xl">
+                        <a href="{% url 'index' %}" class="text-primary-600 hover:text-primary-800">
+                            <span class="text-primary-600">Map</span><span class="text-secondary-500">Spark</span>
+                        </a>
+                    </div>
+                    
+                    <div class="nav-links flex items-center space-x-8 ml-auto">
+                        {% if user.is_authenticated %}
+                        <div class="user-dropdown relative">
+                            <div class="user-btn flex items-center cursor-pointer bg-gray-100 rounded-full px-3 py-2 hover:bg-gray-200 transition duration-300">
+                                {% if user.socialaccount_set.all.0.get_avatar_url %}
+                                <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="Profile" class="profile-pic w-8 h-8 rounded-full mr-2">
+                                {% else %}
+                                <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center mr-2">
+                                    {{ user.first_name|default:user.username|slice:":1" }}
+                                </div>
+                                {% endif %}
+                                <span class="text-gray-800 font-medium">{{ user.first_name|default:user.username }}</span>
+                                <span class="ml-1 text-gray-600">▼</span>
+                            </div>
+                            <div class="dropdown-content absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg hidden">
+                                <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition duration-300">Dashboard</a>
+                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition duration-300">Sign Out</a>
+                                <a href="{% url 'home' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition duration-300">Home</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a href="{% url 'account_login' %}" class="nav-cta bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300">Sign In</a>
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>
+        </header>
+    
+        <main class="flex-grow">
+            {% block content %}{% endblock %}
+        </main>
+    
+        <footer class="bg-gray-800 text-white py-12">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="footer-column">
+                        <h3 class="text-xl font-bold mb-4">MapSpark</h3>
+                        <p class="mb-4">Making travel planning effortless and enjoyable since 2023.</p>
+                        <div class="social-links flex space-x-4">
+                            <a href="https://www.facebook.com/" aria-label="Facebook" class="hover:text-blue-400 transition"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://x.com/" aria-label="Twitter" class="hover:text-blue-400 transition"><i class="fab fa-twitter"></i></a>
+                            <a href="https://www.instagram.com/" aria-label="Instagram" class="hover:text-pink-400 transition"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.pinterest.com/" aria-label="Pinterest" class="hover:text-red-400 transition"><i class="fab fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                        <ul class="space-y-2">
+                            <li><a href="{% url 'about' %}" class="hover:text-blue-300 transition flex items-center"><i class="fas fa-chevron-right mr-2 text-xs"></i> About Us</a></li>
+                            <li><a href="{% url 'itinerary' %}" class="hover:text-blue-300 transition flex items-center"><i class="fas fa-chevron-right mr-2 text-xs"></i> Smart Itinerary</a></li>
+                            
+                            <li><a href="{% url 'review-list' %}" class="hover:text-blue-300 transition flex items-center"><i class="fas fa-chevron-right mr-2 text-xs"></i>Reviews</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h3 class="text-xl font-bold mb-4">Contact</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-center"><i class="fas fa-map-marker-alt mr-2"></i> 123 Travel St, Adventure City</li>
+                            <li class="flex items-center"><i class="fas fa-phone mr-2"></i> +1 (555) 123-4567</li>
+                            <li class="flex items-center"><i class="fas fa-envelope mr-2"></i> hello@mapspark.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                    <p>&copy; 2023 MapSpark. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    
+        <style>
+            body {
+                background: url('') no-repeat center center fixed;
+                background-size: cover;
+            }
+    
+            .user-dropdown:hover .dropdown-content {
+                display: block;
+            }
+            
+            .navbar-brand {
+                font-family: 'Pacifico', cursive;
+                font-size: 28px;
+                color: #0d3d8b !important;
+            }
+    
+            .dropdown-content {
+                transform: translateY(10px);
+                opacity: 0;
+                transition: all 0.3s ease;
+            }
+    
+            .user-dropdown:hover .dropdown-content {
+                transform: translateY(0);
+                opacity: 1;
+            }
+    
+            .nav-cta:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    
+        <script>
+            // Toggle dropdown on click for better mobile experience
+            document.querySelectorAll('.user-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const dropdown = btn.nextElementSibling;
+                    dropdown.classList.toggle('hidden');
+                });
+            });
+    
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const dropdowns = document.querySelectorAll('.dropdown-content');
+                dropdowns.forEach(dropdown => {
+                    if (!dropdown.parentElement.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

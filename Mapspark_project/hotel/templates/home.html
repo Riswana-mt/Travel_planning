@@ -1,0 +1,8 @@
+{% extends 'hotel/base.html' %}
+{% block content %}
+    <div class="text-center">
+        <h1 class="text-4xl font-bold mb-4">Welcome to Hotel Booking</h1>
+        <p class="text-lg mb-4">Find and book hotels worldwide with ease.</p>
+        <a href="{% url 'search_hotels' %}" class="bg-blue-600 text-white px-6 py-2 rounded">Search Hotels</a>
+    </div>
+{% endblock %}

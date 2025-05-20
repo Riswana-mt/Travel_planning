@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapSpark - Travel Dashboard</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header Styles */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.02);
+        }
+        
+        .nav-cta {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.2);
+        }
+        
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+        }
+        
+        /* Dropdown Styles */
+        .user-dropdown:hover .dropdown-content,
+        .user-dropdown:focus-within .dropdown-content {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dropdown-content {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Dashboard Section */
+        .dashboard-container {
+            flex: 1;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            padding: 3rem 0;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .welcome-message h2 {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* Footer Styles */
+        footer {
+            background: var(--dark);
+            color: white;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-column h3 {
+            position: relative;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--secondary);
+            border-radius: 3px;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .footer-links i {
+            margin-right: 0.5rem;
+            width: 1rem;
+            text-align: center;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <header class="sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <nav class="flex items-center justify-between">
+                <div class="logo text-2xl">
+                    <a href="{% url 'home' %}" class="text-primary-600 hover:text-primary-800">
+                        <span class="text-primary-600">Map</span><span class="text-secondary-500">Spark</span>
+                    </a>
+                </div>
+                
+                <div class="nav-links flex items-center space-x-6">
+                    {% if user.is_authenticated %}
+                   <div class="user-dropdown relative">
+                        <button class="user-btn flex items-center space-x-2 focus:outline-none group">
+                            {% if user.socialaccount_set.all.0.get_avatar_url %}
+                            <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="Profile" class="w-8 h-8 rounded-full border-2 border-white group-hover:border-primary-200 transition-all">
+                            {% else %}
+                            <div class="w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center group-hover:bg-primary-700 transition-all">
+                                {{ user.first_name|default:user.username|slice:":1"|upper }}
+                            </div>
+                            {% endif %}
+                            <span class="text-gray-700 font-medium group-hover:text-primary-600 transition-colors">
+                                {{ user.first_name|default:user.username }}
+                            </span>
+                            <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:text-primary-600 transition-colors"></i>
+                        </button>
+                        <div class="dropdown-content absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50 hidden border border-gray-100">
+                            <a href="{% url 'dashboard' %}" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors flex items-center">
+                                <i class="fas fa-tachometer-alt mr-3 text-primary-600"></i>
+                                <span>Dashboard</span>
+                            </a>
+                            <a href="{% url 'logout' %}" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors flex items-center">
+                                <i class="fas fa-logout-alt mr-3 text-primary-600"></i>
+                                <span>Sign Out</span>
+                            </a>
+                            
+                            <a href="{% url 'index' %}" class="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors flex items-center">
+                                <i class="fas fa-home-alt mr-3 text-primary-600"></i>
+                                <span>Home</span>
+                            </a>
+                        </div>
+                        
+                    </div>
+                    {% else %}
+                    <a href="{% url 'account_login' %}" class="bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Sign In
+                    </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    {% block content %}
+    <div class="dashboard-container">
+        <div class="container mx-auto px-4">
+            <div class="dashboard-card p-8 max-w-4xl mx-auto">
+                <div class="welcome-message text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-3">Welcome back, {{ user.first_name|default:"Traveler" }}!</h2>
+                    <p class="text-lg text-gray-600">Ready to plan your next adventure?</p>
+                </div>
+                
+                <!-- Dashboard content here
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
+                        <h3 class="text-xl font-semibold text-indigo-800 mb-4">Your Recent Trips</h3>
+                        
+                    </div>
+                    <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-100">
+                        <h3 class="text-xl font-semibold text-emerald-800 mb-4">Recommended Destinations</h3>
+                        Destinations content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% include "footer.html" %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile-friendly dropdown toggle
+            const userBtn = document.querySelector('.user-btn');
+            const dropdown = document.querySelector('.dropdown-content');
+            
+            if (userBtn) {
+                userBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                });
+            }
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                if (dropdown && !dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

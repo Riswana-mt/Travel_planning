@@ -1,0 +1,20 @@
+<!-- booking_confirmation.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="alert alert-success">
+        <h2>🎉 Booking Confirmed!</h2>
+        <p>Your payment was successful.</p>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <h3>{{ booking.hotel_name }}</h3>
+            <p>Dates: {{ booking.checkin_date }} to {{ booking.checkout_date }}</p>
+            <p>Guests: {{ booking.guests }}</p>
+            <p>Total Paid: ${{ booking.price }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
